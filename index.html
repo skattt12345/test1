@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Coin Prices</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        display: flex;
+      }
+
+      h1 {
+        color: #333;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: left;
+      }
+
+      th {
+        background-color: #f2f2f2;
+      }
+
+      .green {
+        background-color: #c8e6c9;
+      }
+
+      .red {
+        background-color: #ffcdd2;
+      }
+    </style>
+  </head>
+  <body>
+    <table>
+      <thead>
+        <tr>
+          <th>Coin</th>
+          <th>Current Price (USD)</th>
+          <th>High 24h (USD)</th>
+          <th>Price Change Percentage (30d)</th>
+        </tr>
+      </thead>
+      <tbody id="coinTableBody"></tbody>
+    </table>
+
+    <script>
+      const coinsToSearch = [
+        "aves",
+        "Canxium",
+        "dydx",
+        "callisto",
+        "ny-blockchain",
+        "Dogether",
+        "OctaSpace",
+        "Disney",
+        "egaz",
+      ];
+
+      fetch(
+        `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=aves%2CCanxium%2Cdydx%2Ccallisto%2Cny-blockchain%2CDogether%2COctaSpace%2CDisney%2Cegaz%2C&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=30d&locale=en`
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          const coinTableBody = document.getElementById("coinTableBody");
+
+          data.forEach((coinData) => {
+            const row = document.createElement("tr");
+            const coinCell = document.createElement("td");
+            const priceCell = document.createElement("td");
+            const high24hCell = document.createElement("td");
+            const priceChangePercentage30dCell = document.createElement("td");
+
+            coinCell.textContent = coinData.name;
+            priceCell.textContent = coinData.current_price.toFixed(8);
+            high24hCell.textContent = coinData.high_24h.toFixed(8);
+            priceChangePercentage30dCell.textContent = coinData.price_change_percentage_30d.toFixed(2) + "%";
+
+            // Add classes for background color based on conditions
+            priceCell.className = coinData.current_price > coinData.high_24h ? "green" : "red";
+
+            row.appendChild(coinCell);
+            row.appendChild(priceCell);
+            row.appendChild(high24hCell);
+            row.appendChild(priceChangePercentage30dCell);
+
+            coinTableBody.appendChild(row);
+          });
+        })
+        .catch((error) => {
+          console.error("Failed to fetch prices:", error);
+        });
+    </script>
+  </body>
+</html>
